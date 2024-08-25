@@ -31,6 +31,7 @@ export default function Home() {
 
   const handleCopyUrl = () => {
     if (shortUrl) {
+
       navigator.clipboard.writeText(shortUrl).then(() => {
         alert('Short URL copied to clipboard!');
       });
@@ -38,10 +39,11 @@ export default function Home() {
   };
 
   const handleDownloadQR = (format: string) => {
+    const name = shortUrl.split('/')[3]
     if (qrCode) {
       const link = document.createElement('a');
       link.href = qrCode;
-      link.download = `QRCode.${format}`;
+      link.download = `QRCode${name || "_"}.${format}`;
       link.click();
     }
   };
@@ -50,7 +52,7 @@ export default function Home() {
     <>
       <Header />
       <div className="min-h-[70vh] text-white">
-        <div className="p-6 bg-white shadow-lg bg-blue-200 min-h-[85vh] w-full flex flex-col items-center bg-black">
+        <div className="p-6  shadow-lg  min-h-[85vh] w-full flex flex-col items-center bg-black">
           <div className='py-5 mb-6'>
             <h1 className="text-[1.7rem] md:text-[2.3rem] lg:text-[3rem] font-bold text-center text-gray-800 text-white">One Click to short your URL</h1>
             <p className='text-sm md:text-xl text-center text-gray-400 lg'>Enter the URL to find out how many clicks it has received so far. Example: rb.gy/pjzjsl</p>

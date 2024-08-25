@@ -1,40 +1,91 @@
+// import mongoose from 'mongoose';
+
+// const MONGODB_URI = process.env.MONGODB_URI as string;
+
+// if (!MONGODB_URI) {
+//   throw new Error(
+//     'Please define the MONGODB_URI environment variable inside .env.local'
+//   );
+// }
+
+
+// let cached:any = global.mongoose;
+
+// if (!cached) {
+//   cached = global.mongoose = { conn: null, promise: null };
+// }
+
+// async function dbConnect() {
+//   if (cached.conn) {
+//     console.log('database connection start-------')
+//     return cached.conn;
+//   }
+  
+//   if (!cached.promise) {
+//     const opts:{} = {
+//       // useNewUrlParser: true,
+//       // useUnifiedTopology: true,
+//     };
+
+//     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+//       return mongoose;
+//     });
+//     console.log('database connected ')
+//   }
+
+//   cached.conn = await cached.promise;
+//   return cached.conn;
+// }
+
+// export default dbConnect;
+
+
+
+
+
+
+
+
+
+
+
+
+
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-
-let cached:any = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
+// Create a cached connection variable
+let cachedConnection: mongoose.Connection | null | any = null;
+let cachedPromise: Promise<typeof mongoose> | null = null;
 
 async function dbConnect() {
-  if (cached.conn) {
-    console.log('database connection start-------')
-    return cached.conn;
+  // If the connection already exists, return it
+  if (cachedConnection) {
+    console.log('Using existing database connection');
+    return cachedConnection;
   }
-  
-  if (!cached.promise) {
-    const opts:{} = {
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
+
+  // If there's no existing connection, create one
+  if (!cachedPromise) {
+    const opts = {
+      // Add any connection options here if needed
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
+    cachedPromise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+      console.log('New database connection established');
+      cachedConnection = mongooseInstance.connection;
+      return mongooseInstance;
     });
-    console.log('database connected ')
   }
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+   cachedConnection = await cachedPromise;
+  return cachedConnection;
 }
 
 export default dbConnect;
+
